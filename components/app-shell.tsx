@@ -28,7 +28,7 @@ function NavBar() {
   const pathname = usePathname()
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-6 pt-6 sm:px-10 sm:pt-8">
+    <header className="sticky top-0 z-50 bg-[#fcfcfe]/85 px-6 pb-4 pt-6 backdrop-blur-md sm:px-10 sm:pt-8">
       <div className="flex items-center justify-between">
         <Link
           href="/events"
@@ -83,7 +83,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#fcfcfe]">
       <NavBar />
-      <main className="min-h-screen px-6 pb-16 pt-[136px] sm:px-10 sm:pt-[152px]">{children}</main>
+      <main className="px-6 pb-16 pt-4 sm:px-10 sm:pt-6">{children}</main>
     </div>
   )
 }
