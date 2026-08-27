@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { allStories, canvasHref, epics, screens, screensOfEpic } from '@/lib/prototype-map'
+import { allStories, canvasHref, epics, screensOfEpic, visibleScreens } from '@/lib/prototype-map'
 
 const viewports = {
   mobile: { label: 'Mobile', width: 390, height: 844 },
@@ -49,7 +49,7 @@ export default function CanvasPage() {
         <div style={{ marginRight: 'auto' }}>
           <div style={{ fontSize: 15, fontWeight: 600 }}>SplitIt · pantallas del prototipo</div>
           <div style={{ fontSize: 12, color: '#8B93A3' }}>
-            {screens.length} pantallas · {allStories.length} historias · datos de ejemplo, no es la
+            {visibleScreens.length} pantallas · {allStories.length} historias · datos de ejemplo, no es la
             app en producción
           </div>
         </div>

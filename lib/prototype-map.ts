@@ -19,6 +19,8 @@ export type Screen = {
   title: string
   epic: string
   stories: Story[]
+  /** Fuera del canvas por ahora: la pantalla existe pero no se muestra. */
+  hidden?: boolean
 }
 
 export const screens: Screen[] = [
@@ -48,31 +50,38 @@ export const screens: Screen[] = [
     title: 'Mis eventos',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-006', title: 'Consultar mis eventos', issue: 6 }],
+    hidden: true,
   },
   {
     route: '/events/empty',
     title: 'Mis eventos · vacío',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-006', title: 'Consultar mis eventos', issue: 6 }],
+    hidden: true,
   },
   {
     route: '/events/new',
     title: 'Crear evento',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-005', title: 'Crear evento', issue: 5 }],
+    hidden: true,
   },
   {
     route: '/events/event-1',
     title: 'Detalle de evento',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-007', title: 'Ver detalle de evento', issue: 7 }],
+    hidden: true,
   },
 ]
 
-export const epics = [...new Set(screens.map((screen) => screen.epic))]
+/** Lo que el canvas muestra. */
+export const visibleScreens: Screen[] = screens.filter((screen) => !screen.hidden)
+
+export const epics = [...new Set(visibleScreens.map((screen) => screen.epic))]
 
 export function screensOfEpic(epic: string): Screen[] {
-  return screens.filter((screen) => screen.epic === epic)
+  return visibleScreens.filter((screen) => screen.epic === epic)
 }
 
 /** Todas las pantallas donde aparece la historia. La primera es su direccion. */
@@ -92,7 +101,7 @@ export function findStory(storyId: string): { story: Story; screen: Screen } | u
 
 export const allStories: Story[] = [
   ...new Map(
-    screens.flatMap((screen) => screen.stories).map((story) => [story.id, story])
+    visibleScreens.flatMap((screen) => screen.stories).map((story) => [story.id, story])
   ).values(),
 ].sort((a, b) => a.id.localeCompare(b.id))
 
