@@ -1,7 +1,19 @@
 import { EventDetailScreen } from '@/components/event-detail-screen'
 
-export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+type TabValue = 'expenses' | 'balances' | 'members'
 
-  return <EventDetailScreen eventId={id} />
+const validTabs: TabValue[] = ['expenses', 'balances', 'members']
+
+export default async function EventDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ tab?: string }>
+}) {
+  const { id } = await params
+  const { tab } = await searchParams
+  const initialTab = validTabs.find((value) => value === tab) ?? 'expenses'
+
+  return <EventDetailScreen eventId={id} initialTab={initialTab} />
 }

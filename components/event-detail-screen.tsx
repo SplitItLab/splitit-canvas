@@ -295,11 +295,11 @@ function MemberBalanceRow({ name, amount, currency }: { name: string; amount: nu
   )
 }
 
-export function EventDetailScreen({ eventId, empty = false }: { eventId: string; empty?: boolean }) {
+export function EventDetailScreen({ eventId, empty = false, initialTab = 'expenses' }: { eventId: string; empty?: boolean; initialTab?: TabValue }) {
   const event = mockEvents.find((item) => item.id === eventId) ?? mockEvents[0]
   const [expenses, setExpenses] = useState<Expense[]>(empty ? [] : event.expenses)
   const [participants, setParticipants] = useState<Event['participants']>(event.participants)
-  const [activeTab, setActiveTab] = useState<TabValue>('expenses')
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab)
   const [copied, setCopied] = useState(false)
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false)
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null)
