@@ -3,15 +3,18 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { AuthHeading, AuthSplitLayout } from '@/components/auth-split-layout'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { Eye, EyeOff } from 'lucide-react'
 
+const fieldClass =
+  'h-auto rounded-[6px] border-[#cbd5e1] bg-white px-3 py-2 text-base leading-6 text-[#0f172a] placeholder:text-[#94a3b8] md:text-base'
+
 function LoginFallback() {
-  return <div className="min-h-screen bg-background" />
+  return <div className="min-h-screen bg-[#fcfcfe]" />
 }
 
 function LoginContent() {
@@ -37,94 +40,75 @@ function LoginContent() {
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     const redirect = searchParams.get('redirect')
     router.push(redirect ?? '/events')
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <Link href="/login" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <span className="text-xl font-bold text-primary-foreground">S</span>
-              </div>
-              <span className="text-2xl font-bold text-foreground">SplitIt</span>
-            </Link>
+    <AuthSplitLayout>
+      <div className="w-full max-w-md space-y-[10px] lg:max-w-none">
+        <AuthHeading title="Bienvenido a SplitIt" subtitle="Ingresa tus datos para continuar" />
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-[10px]">
+          <div className="flex flex-col gap-[6px]">
+            <Label htmlFor="email" className="text-sm font-medium text-[#0f172a]">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="tu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={fieldClass}
+              autoComplete="email"
+            />
           </div>
 
-          <Card className="bg-card border-border">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-foreground">Bienvenido de nuevo</CardTitle>
-              <CardDescription>Ingresa tus datos para continuar</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-input border-border"
-                    autoComplete="email"
-                  />
-                </div>
+          <div className="flex flex-col gap-[6px]">
+            <Label htmlFor="password" className="text-sm font-medium text-[#0f172a]">
+              Contraseña
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`${fieldClass} pr-14`}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#0f172a]"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Contrasena</Label>
-                  </div>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Tu contrasena"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-input border-border pr-10"
-                      autoComplete="current-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="h-10 w-full rounded-[8px] text-xl font-medium text-[#fcfcfe]"
+          >
+            {isLoading ? <Spinner className="h-4 w-4" /> : 'Ingresar'}
+          </Button>
+        </form>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <Spinner className="h-4 w-4" />
-                  ) : (
-                    'Iniciar sesion'
-                  )}
-                </Button>
-              </form>
-
-              <p className="mt-6 text-center text-sm text-muted-foreground">
-                No tienes cuenta?{' '}
-                <Link href="/register" className="text-primary hover:underline font-medium">
-                  Registrate gratis
-                </Link>
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
+        <p className="text-center text-sm text-[#868992]">
+          ¿No tenés cuenta?{' '}
+          <Link href="/register" className="font-medium text-primary hover:underline">
+            Registrate gratis
+          </Link>
+        </p>
+      </div>
+    </AuthSplitLayout>
   )
 }
 

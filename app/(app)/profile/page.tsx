@@ -1,125 +1,187 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
-import {
-  User,
-  LogOut,
-  Check
-} from 'lucide-react'
+import { Check, LogOut } from 'lucide-react'
 import { mockCurrentUser } from '@/lib/mock-data'
-import Link from 'next/link'
+
+// Emails ya tomados por otras cuentas (mock hasta que exista backend)
+const takenEmails = ['sofi@email.com', 'tomi@email.com', 'lau@email.com']
+
+const fieldClass =
+  'h-auto rounded-[6px] border-[#cbd5e1] bg-white px-3 py-2 text-base leading-6 text-[#0f172a] placeholder:text-[#94a3b8] md:text-base'
+
+function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map(part => part[0] ?? '')
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+}
 
 export default function ProfilePage() {
+  const router = useRouter()
+  const [account, setAccount] = useState(mockCurrentUser)
   const [name, setName] = useState(mockCurrentUser.name)
   const [email, setEmail] = useState(mockCurrentUser.email)
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({})
   const [isLoading, setIsLoading] = useState(false)
   const [saved, setSaved] = useState(false)
 
   const handleSave = async () => {
+    const nextErrors: { name?: string; email?: string } = {}
+
+    if (!name.trim()) {
+      nextErrors.name = 'El nombre no puede quedar vacio'
+    }
+
+    const normalizedEmail = email.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      nextErrors.email = 'Ingresa un email con formato valido'
+    } else if (
+      normalizedEmail !== account.email.toLowerCase() &&
+      takenEmails.includes(normalizedEmail)
+    ) {
+      nextErrors.email = 'Ese email ya esta registrado en otra cuenta'
+    }
+
+    setErrors(nextErrors)
+    setSaved(false)
+    if (Object.keys(nextErrors).length > 0) return
+
     setIsLoading(true)
     await new Promise(resolve => setTimeout(resolve, 1000))
+    setAccount({ ...account, name: name.trim(), email: normalizedEmail })
+    setName(name.trim())
+    setEmail(normalizedEmail)
     setIsLoading(false)
     setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setTimeout(() => setSaved(false), 3000)
+  }
+
+  const handleLogout = () => {
+    router.push('/login')
   }
 
   return (
-    <div className="p-4 lg:p-8 max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Mi perfil</h1>
-        <p className="text-muted-foreground mt-1">Gestiona tu cuenta y preferencias</p>
-      </div>
+    <div className="flex flex-col gap-[10px]">
+      <h1 className="text-[40px] font-extrabold leading-[1.15] text-[#001625] sm:text-[60px]">
+        Tu perfil
+      </h1>
+      <p className="text-sm font-medium text-[#868992]">Configura las preferencias de tu perfil</p>
 
-      {/* Profile Card */}
-      <Card className="bg-card border-border mb-6">
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-              <span className="text-lg font-bold text-primary">
-                {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-              </span>
-            </div>
-            <div>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Informacion personal
-              </CardTitle>
-              <CardDescription>Actualiza tus datos de perfil</CardDescription>
-            </div>
+      {/* Informacion personal */}
+      <section className="flex w-full flex-col gap-4 rounded-[24px] border border-[#cfd6dc] bg-[#fefefe] p-6 sm:p-8">
+        <div className="flex items-center gap-4">
+          <div
+            aria-hidden
+            className="flex size-14 shrink-0 items-center justify-center rounded-[16px] bg-[#effaf6] text-lg font-extrabold text-primary"
+          >
+            {initials(account.name) || 'S'}
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Form */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre completo</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="bg-input border-border"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-input border-border"
-              />
-            </div>
-
-            <Button onClick={handleSave} disabled={isLoading} className="gap-2">
-              {isLoading ? (
-                <Spinner className="h-4 w-4" />
-              ) : saved ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Guardado!
-                </>
-              ) : (
-                'Guardar cambios'
-              )}
-            </Button>
+          <div className="min-w-0">
+            <h2 className="truncate text-2xl font-extrabold text-[#001625] sm:text-[32px]">
+              {account.name}
+            </h2>
+            <p className="truncate text-sm font-medium text-[#868992]">{account.email}</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Danger Zone */}
-      <Card className="bg-card border-destructive/50 mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg text-destructive flex items-center gap-2">
-            <LogOut className="h-5 w-5" />
-            Zona de peligro
-          </CardTitle>
-          <CardDescription>
-            Acciones irreversibles
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-foreground">Cerrar sesion</p>
-              <p className="text-sm text-muted-foreground">Salir de tu cuenta en este dispositivo</p>
-            </div>
-            <Link href="/">
-              <Button variant="outline" className="gap-2">
-                <LogOut className="h-4 w-4" />
-                Cerrar sesion
-              </Button>
-            </Link>
+        <p className="text-sm font-medium text-[#868992]">Actualiza tu informacion personal</p>
+
+        <div className="grid w-full gap-6 pb-0.5 lg:grid-cols-2 lg:gap-8">
+          <div className="flex flex-col gap-[6px]">
+            <Label htmlFor="name" className="text-base font-extrabold text-black">
+              Nombre completo
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={fieldClass}
+              autoComplete="name"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+            />
+            {errors.name && (
+              <p id="name-error" className="text-sm font-medium text-destructive">
+                {errors.name}
+              </p>
+            )}
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="flex flex-col gap-[6px]">
+            <Label htmlFor="email" className="text-base font-extrabold text-black">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={fieldClass}
+              autoComplete="email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-sm font-medium text-destructive">
+                {errors.email}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            onClick={handleSave}
+            disabled={isLoading}
+            className="h-10 rounded-[8px] px-4 text-xl font-medium text-[#fcfcfe]"
+          >
+            {isLoading ? <Spinner className="h-4 w-4" /> : 'Guardar cambios'}
+          </Button>
+          {saved && (
+            <p role="status" className="flex items-center gap-2 text-sm font-medium text-primary">
+              <Check className="size-4" />
+              Cambios guardados
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Sesion */}
+      <section className="flex w-full flex-col gap-4 rounded-[24px] border border-[#cfd6dc] bg-[#fefefe] p-6 sm:p-8">
+        <div className="flex items-center gap-[10px]">
+          <LogOut className="size-6 text-[#001625]" />
+          <h2 className="text-base font-extrabold text-[#001625]">Sesion</h2>
+        </div>
+        <p className="text-sm font-medium text-[#868992]">
+          Tu cuenta y tus eventos se mantienen; podes volver a entrar cuando quieras
+        </p>
+
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-[489px]">
+            <p className="text-base font-extrabold text-black">Cerrar sesion</p>
+            <p className="mt-2 text-sm font-medium text-[#868992]">
+              Salir de tu cuenta en este dispositivo
+            </p>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="h-10 shrink-0 gap-[10px] rounded-[8px] bg-[#f1f5f9] px-4 text-xl font-medium text-[#001625] hover:bg-[#e2e8f0]"
+          >
+            Cerrar sesion
+            <LogOut className="size-6" />
+          </Button>
+        </div>
+      </section>
     </div>
   )
 }

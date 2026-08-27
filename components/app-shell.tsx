@@ -3,101 +3,87 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ReceiptText, UserRound } from 'lucide-react'
+import { AlignJustify, LayoutGrid, UserRound } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-
-const navItems = [
-  { href: '/events', label: 'Eventos', icon: ReceiptText },
-]
-
-const mobileNavItems = [
-  ...navItems,
-  { href: '/profile', label: 'Perfil', icon: UserRound },
-]
 
 function Logo() {
   return (
-    <Link href="/events" className="flex items-center gap-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-lg font-black text-primary-foreground">
-        S
+    <div className="relative h-[34px] w-[74px]">
+      <div className="absolute left-0 top-0 h-[34px] w-[57px] rounded-[8px] bg-primary" />
+      <div className="absolute left-[calc(50%+1px)] top-[3px] flex -translate-x-1/2 items-center justify-center whitespace-nowrap text-[24px] font-extrabold leading-[1.15]">
+        <span className="text-[#fcfcfe]">Split</span>
+        <span className="text-black">It</span>
       </div>
-      <span className="text-2xl font-black tracking-normal text-foreground">SplitIt</span>
-    </Link>
+    </div>
+  )
+}
+
+function NavBar() {
+  const pathname = usePathname()
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 px-6 pt-6 sm:px-10 sm:pt-8">
+      <div className="flex items-center justify-between">
+        <Link
+          href="/events"
+          aria-label="Ir a eventos"
+          className="flex items-center rounded-[24px] border border-[#edf0f8] bg-[#fefefe] px-4 py-[11px]"
+        >
+          <Logo />
+        </Link>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label="Abrir menu"
+            className="flex items-center gap-3 rounded-[24px] bg-[#001625] p-[10px] outline-none"
+          >
+            <span className="flex size-12 items-center justify-center rounded-full text-[#fcfcfe]">
+              <AlignJustify className="size-6" />
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 rounded-[24px] p-2">
+            <DropdownMenuItem asChild>
+              <Link
+                href="/events"
+                className={cn(
+                  'rounded-[16px] px-3 py-2.5 text-sm font-medium',
+                  pathname.startsWith('/events') && 'text-primary',
+                )}
+              >
+                <LayoutGrid className="size-4" />
+                Eventos
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/profile"
+                className={cn(
+                  'rounded-[16px] px-3 py-2.5 text-sm font-medium',
+                  pathname.startsWith('/profile') && 'text-primary',
+                )}
+              >
+                <UserRound className="size-4" />
+                Perfil
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
   )
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname()
-  const isEventsActive = pathname.startsWith('/events')
-
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background">
-      <aside className="fixed bottom-6 left-6 top-6 z-40 hidden w-64 flex-col rounded-[32px] border border-border bg-card p-5 shadow-[0_10px_40px_rgba(15,23,42,0.06)] lg:flex">
-        <Logo />
-
-        <nav className="mt-10 space-y-2">
-          {navItems.map((item, index) => {
-            const Icon = item.icon
-
-            return (
-              <Link
-                key={`${item.label}-desktop-${index}`}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-[18px] px-4 py-3 text-sm font-black transition-colors',
-                  isEventsActive ? 'bg-[#E8FAF5] text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                )}
-              >
-                <Icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-
-        <Link
-          href="/profile"
-          className={cn(
-            'mt-auto flex items-center gap-3 rounded-[24px] bg-background p-4 transition-colors hover:bg-muted',
-            pathname.startsWith('/profile') && 'bg-[#E8FAF5]'
-          )}
-        >
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E8FAF5] text-primary">
-            <UserRound className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-black text-foreground">Juan Perez</p>
-            <p className="truncate text-xs font-semibold text-muted-foreground">Perfil</p>
-          </div>
-        </Link>
-      </aside>
-
-      <main className="mx-auto min-h-screen w-full max-w-md px-5 pb-28 pt-6 sm:max-w-2xl sm:px-8 md:max-w-4xl lg:max-w-none lg:pb-12 lg:pl-[344px] lg:pr-10 lg:pt-8">
-        <div className="mx-auto w-full lg:max-w-7xl">{children}</div>
-      </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 mx-auto h-[88px] max-w-md rounded-t-[28px] border border-b-0 border-border bg-card shadow-[0_-4px_20px_rgba(0,0,0,0.05)] lg:hidden">
-        <div className="grid h-full grid-cols-2 px-8">
-          {mobileNavItems.map((item, index) => {
-            const isActive = index === 0 ? isEventsActive : pathname.startsWith('/profile')
-            const Icon = item.icon
-
-            return (
-              <Link
-                key={`${item.label}-${index}`}
-                href={item.href}
-                className={cn(
-                  'flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
-                )}
-              >
-                <Icon className="h-6 w-6" />
-                <span>{item.label}</span>
-              </Link>
-            )
-          })}
-        </div>
-      </nav>
+    <div className="min-h-screen overflow-x-hidden bg-[#fcfcfe]">
+      <NavBar />
+      <main className="min-h-screen px-6 pb-16 pt-[136px] sm:px-10 sm:pt-[152px]">{children}</main>
     </div>
   )
 }
