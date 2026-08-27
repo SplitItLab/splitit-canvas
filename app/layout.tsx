@@ -13,10 +13,23 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono'
 })
 
+const title = 'SplitIt · prototipo'
+const description =
+  'Canvas de pantallas del prototipo. Datos de ejemplo, no es la app en produccion.'
+
 export const metadata: Metadata = {
-  title: 'SplitIt - Divide gastos grupales de forma simple',
-  description: 'Divide gastos con amigos, viajes, juntadas y eventos. Calcula automaticamente quien le debe a quien.',
-  generator: 'v0.app',
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title,
+    description,
+  },
 }
 
 export const viewport: Viewport = {
