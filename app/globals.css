@@ -18,7 +18,7 @@
   --muted-foreground: #7b8494;
   --accent: #e8faf5;
   --accent-foreground: #071b3a;
-  --destructive: #8b5cf6;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e8ecf2;
   --input: #ffffff;
@@ -58,7 +58,7 @@
   --muted-foreground: #7b8494;
   --accent: #e8faf5;
   --accent-foreground: #071b3a;
-  --destructive: #8b5cf6;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e8ecf2;
   --input: #ffffff;
@@ -132,7 +132,9 @@
 }
 
 @layer utilities {
+  /* Card del sistema, tal como quedo en perfil al aplicar el Figma: sin
+     sombra y con el borde gris del diseno, no el token generico. */
   .splitit-card {
-    @apply rounded-[24px] border border-border bg-card shadow-[0_4px_16px_rgba(15,23,42,0.04)];
+    @apply rounded-[24px] border border-[#cfd6dc] bg-[#fefefe];
   }
 }

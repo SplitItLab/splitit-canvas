@@ -1,9 +1,11 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Plus, ReceiptText, Search } from 'lucide-react'
+import { Plus, Search, SearchX, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { fieldClass, primaryButtonClass } from '@/lib/form-styles'
 import { getEventIcon } from '@/lib/event-icons'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/lib/types'
@@ -19,45 +21,29 @@ function Logo() {
   )
 }
 
-function IconCircle({
-  children,
-  tone = 'green',
-  className,
-}: {
-  children: ReactNode
-  tone?: 'green' | 'purple' | 'blue'
-  className?: string
-}) {
-  return (
-    <div
-      className={cn(
-        'flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px]',
-        tone === 'green' && 'bg-[#E8FAF5] text-primary',
-        tone === 'purple' && 'bg-[#F0E9FF] text-secondary',
-        tone === 'blue' && 'bg-[#EAF4FF] text-[#2D9CDB]',
-        className
-      )}
-    >
-      {children}
-    </div>
-  )
-}
-
 function EventCard({ event }: { event: Event }) {
   const { Icon } = getEventIcon(event.icon)
 
   return (
-    <Link href={`/events/${event.id}`} className="splitit-card block p-4 transition-transform active:scale-[0.98]">
-      <div className="flex items-center gap-4">
-        <IconCircle tone={event.id === 'event-1' ? 'blue' : event.id === 'event-2' ? 'purple' : 'green'}>
-          <Icon className="h-6 w-6" />
-        </IconCircle>
+    <Link
+      href={`/events/${event.id}`}
+      className="splitit-card flex items-center gap-4 p-4 transition-colors hover:border-primary/40 sm:p-5"
+    >
+      <div
+        aria-hidden
+        className="flex size-14 shrink-0 items-center justify-center rounded-[16px] bg-[#effaf6] text-primary"
+      >
+        <Icon className="size-6" />
+      </div>
 
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-base font-black text-foreground">{event.name}</h2>
-          <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{event.description}</p>
-          <p className="mt-2 text-xs font-black text-primary">{event.participants.length} integrantes</p>
-        </div>
+      <div className="min-w-0 flex-1">
+        <h2 className="truncate text-base font-extrabold text-[#001625]">{event.name}</h2>
+        {/* La descripcion es opcional (SPLT-005 #5): sin ella no se reserva el
+            renglon, para no dejar un hueco sin explicacion. */}
+        {event.description && (
+          <p className="mt-1 line-clamp-2 text-sm font-medium text-[#868992]">{event.description}</p>
+        )}
+        <p className="mt-2 text-sm font-medium text-primary">{event.participants.length} integrantes</p>
       </div>
     </Link>
   )
@@ -65,11 +51,27 @@ function EventCard({ event }: { event: Event }) {
 
 function EmptyEventsCard() {
   return (
-    <section className="splitit-card overflow-hidden p-5 sm:p-6">
+    <section className="splitit-card p-6 sm:p-8">
       <div className="mx-auto max-w-sm text-center">
-        <h2 className="text-2xl font-black tracking-normal text-foreground">Todavia no tenes eventos</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Crea tu primer evento o unite con un codigo para empezar a dividir gastos con tu grupo.
+        <h2 className="text-2xl font-extrabold text-[#001625]">Todavia no tenes eventos</h2>
+        <p className="mt-2 text-sm font-medium text-[#868992]">
+          Crea tu primer evento para empezar a dividir gastos con tu grupo.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function NoMatchesCard({ query }: { query: string }) {
+  return (
+    <section className="splitit-card p-6 sm:p-8">
+      <div className="mx-auto max-w-sm text-center">
+        <span className="mx-auto mb-3 flex size-12 items-center justify-center rounded-[16px] bg-[#f1f5f9] text-[#868992]">
+          <SearchX className="size-6" />
+        </span>
+        <h2 className="text-2xl font-extrabold text-[#001625]">Sin resultados</h2>
+        <p className="mt-2 text-sm font-medium text-[#868992]">
+          Ningun evento tuyo coincide con &laquo;{query}&raquo;.
         </p>
       </div>
     </section>
@@ -77,7 +79,13 @@ function EmptyEventsCard() {
 }
 
 export function EventsScreen({ events }: { events: Event[] }) {
+  const [query, setQuery] = useState('')
   const hasEvents = events.length > 0
+
+  const term = query.trim().toLowerCase()
+  const matches = term
+    ? events.filter((event) => event.name.toLowerCase().includes(term))
+    : events
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -85,45 +93,65 @@ export function EventsScreen({ events }: { events: Event[] }) {
         <Logo />
       </header>
 
-      <header className="space-y-4 lg:flex lg:items-end lg:justify-between lg:space-y-0">
-        <div>
-          <p className="text-sm font-black text-primary">Eventos</p>
-          <h1 className="mt-1 text-3xl font-black text-foreground lg:text-5xl">Tus eventos</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground lg:text-base">
-            {hasEvents
-              ? 'Selecciona un evento creado para cargar gastos, revisar saldos y ver quien le debe a quien.'
-              : 'Cuando tengas eventos creados, los vas a ver aca para cargar gastos y revisar saldos.'}
-          </p>
-        </div>
+      <header>
+        <h1 className="text-[40px] font-extrabold leading-[1.15] text-[#001625] sm:text-[60px]">
+          Tus eventos
+        </h1>
+        <p className="mt-2 max-w-xl text-sm font-medium text-[#868992]">
+          {hasEvents
+            ? 'Selecciona un evento creado para cargar gastos, revisar saldos y ver quien le debe a quien.'
+            : 'Cuando tengas eventos creados, los vas a ver aca para cargar gastos y revisar saldos.'}
+        </p>
+      </header>
 
-        <Link href="/events/new">
-          <Button className="h-12 w-full rounded-[18px] bg-primary px-5 font-black text-primary-foreground hover:bg-primary/90 lg:w-auto">
+      {/*
+        Buscador y accion primaria comparten fila, como en el Figma. En mobile
+        no entran las dos, asi que se apilan con el boton arriba a lo ancho
+        (flex-col-reverse), igual que el CTA de login. Sin eventos no hay que
+        buscar, pero el boton tiene que seguir estando: es la unica salida del
+        estado vacio.
+      */}
+      <section className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+        {hasEvents && (
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#94a3b8]" />
+            <Input
+              placeholder="Buscar evento"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className={cn(fieldClass, 'w-full pl-9', query && 'pr-11')}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="Limpiar busqueda"
+                className="absolute right-1.5 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-[6px] text-[#868992] transition-colors hover:bg-[#f1f5f9] hover:text-[#001625]"
+              >
+                <X className="size-4" />
+              </button>
+            )}
+          </div>
+        )}
+
+        <Link href="/events/new" className="w-full sm:w-auto">
+          <Button className={cn(primaryButtonClass, 'w-full px-5 sm:w-auto')}>
             <Plus className="mr-2 h-5 w-5" />
             Crear evento
           </Button>
         </Link>
-      </header>
+      </section>
 
-      {hasEvents && (
-        <section>
-          <div className="flex h-14 items-center gap-3 rounded-[20px] border border-border bg-card px-4">
-            <Search className="h-5 w-5 text-muted-foreground" />
-            <input
-              className="h-full flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-muted-foreground"
-              placeholder="Buscar evento"
-            />
-          </div>
-        </section>
-      )}
+      {!hasEvents && <EmptyEventsCard />}
 
-      {hasEvents ? (
+      {hasEvents && matches.length === 0 && <NoMatchesCard query={query.trim()} />}
+
+      {hasEvents && matches.length > 0 && (
         <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {events.map((event) => (
+          {matches.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
         </section>
-      ) : (
-        <EmptyEventsCard />
       )}
     </div>
   )

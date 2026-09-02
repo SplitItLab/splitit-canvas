@@ -10,9 +10,9 @@ export const mockCurrentUser: User = {
 
 // Mock participants
 const mockParticipants: Participant[] = [
-  { id: 'p-1', name: 'Nicolas', email: 'nicolas@email.com', isGuest: false },
-  { id: 'p-2', name: 'Marcos', email: 'marcos@email.com', isGuest: false },
-  { id: 'p-3', name: 'Lucas', email: 'lucas@email.com', isGuest: false },
+  { id: 'p-1', name: 'Nicolas', userId: 'user-1', email: 'nicolas@email.com', isGuest: false },
+  { id: 'p-2', name: 'Marcos', userId: 'user-2', email: 'marcos@email.com', isGuest: false },
+  { id: 'p-3', name: 'Lucas', userId: 'user-3', email: 'lucas@email.com', isGuest: false },
   { id: 'p-4', name: 'Francisco', isGuest: true },
 ]
 
@@ -139,16 +139,31 @@ export const mockEvents: Event[] = [
     icon: 'home'
   },
   {
+    // Evento ajeno: el usuario participa pero no lo creo. Sin este caso no se
+    // puede ver el criterio #2 de SPLT-006.
     id: 'event-3',
     name: 'Cumple de Ana',
     description: 'Fiesta de cumpleanos',
-    createdBy: 'user-1',
+    createdBy: 'user-2',
     participants: mockParticipants,
     expenses: [],
     createdAt: '2024-02-01T10:00:00Z',
     inviteCode: 'ANA2024',
     currency: 'ARS',
     icon: 'party'
+  },
+  {
+    // Sin descripcion: es opcional al crear el evento, asi que el listado tiene
+    // que saber dibujar la card sin ese renglon.
+    id: 'event-4',
+    name: 'Asado del viernes',
+    createdBy: 'user-1',
+    participants: mockParticipants.slice(0, 2),
+    expenses: [],
+    createdAt: '2024-02-14T20:00:00Z',
+    inviteCode: 'ASADO24',
+    currency: 'ARS',
+    icon: 'food'
   },
 ]
 

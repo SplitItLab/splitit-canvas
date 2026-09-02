@@ -47,7 +47,6 @@ import {
   formatDate,
   getInitials,
   getInviteLink,
-  mockCurrentUser,
   mockEvents,
 } from '@/lib/mock-data'
 import { getExchangeRates } from '@/lib/exchange'
@@ -874,7 +873,9 @@ export function EventDetailScreen({ eventId, empty = false, initialTab = 'expens
 
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {participants.map((participant) => {
-              const isOwner = participant.email === mockCurrentUser.email
+              // Dueño del evento (SPLT-005 #10), no "soy yo": se resuelve
+              // contra createdBy, no contra la cuenta logueada.
+              const isOwner = !!participant.userId && participant.userId === event.createdBy
               return (
                 <article key={participant.id} className="splitit-card flex items-center gap-3 p-4">
                   <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black ${isOwner ? 'bg-primary text-primary-foreground' : 'bg-[#E8FAF5] text-primary'}`}>
@@ -885,7 +886,7 @@ export function EventDetailScreen({ eventId, empty = false, initialTab = 'expens
                       <p className="truncate text-sm font-black text-foreground">{participant.name}</p>
                       {isOwner && (
                         <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-primary">
-                          Organizador
+                          Dueño
                         </span>
                       )}
                     </div>

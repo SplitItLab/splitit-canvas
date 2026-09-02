@@ -9,6 +9,8 @@ export interface User {
 export interface Participant {
   id: string
   name: string
+  /** Cuenta vinculada al integrante. Vacio = invitado sin cuenta. */
+  userId?: string
   email?: string
   avatar?: string
   isGuest: boolean

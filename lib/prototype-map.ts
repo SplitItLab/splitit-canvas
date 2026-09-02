@@ -46,11 +46,16 @@ export const screens: Screen[] = [
     ],
   },
   {
+    route: '/events/new',
+    title: 'Crear evento',
+    epic: 'Eventos',
+    stories: [{ id: 'SPLT-005', title: 'Crear evento', issue: 5 }],
+  },
+  {
     route: '/events',
     title: 'Mis eventos',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-006', title: 'Consultar mis eventos', issue: 6 }],
-    hidden: true,
   },
   {
     route: '/events/empty',
@@ -60,15 +65,15 @@ export const screens: Screen[] = [
     hidden: true,
   },
   {
-    route: '/events/new',
-    title: 'Crear evento',
+    route: '/events/event-1',
+    title: 'Detalle de evento',
     epic: 'Eventos',
-    stories: [{ id: 'SPLT-005', title: 'Crear evento', issue: 5 }],
+    stories: [{ id: 'SPLT-007', title: 'Ver detalle de evento', issue: 7 }],
     hidden: true,
   },
   {
-    route: '/events/event-1',
-    title: 'Detalle de evento',
+    route: '/events/event-1/empty',
+    title: 'Detalle de evento · vacío',
     epic: 'Eventos',
     stories: [{ id: 'SPLT-007', title: 'Ver detalle de evento', issue: 7 }],
     hidden: true,
@@ -83,6 +88,7 @@ export const epics = [...new Set(visibleScreens.map((screen) => screen.epic))]
 export function screensOfEpic(epic: string): Screen[] {
   return visibleScreens.filter((screen) => screen.epic === epic)
 }
+
 
 /** Todas las pantallas donde aparece la historia. La primera es su direccion. */
 export function screensOfStory(storyId: string): Screen[] {

@@ -8,10 +8,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
+import { fieldClass, primaryButtonClass } from '@/lib/form-styles'
+import { cn } from '@/lib/utils'
 import { Eye, EyeOff } from 'lucide-react'
 
-const fieldClass =
-  'h-auto rounded-[6px] border-[#cbd5e1] bg-white px-3 py-2 text-base leading-6 text-[#0f172a] placeholder:text-[#94a3b8] md:text-base'
 
 function LoginFallback() {
   return <div className="min-h-screen bg-[#fcfcfe]" />
@@ -95,7 +95,7 @@ function LoginContent() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-10 w-full rounded-[8px] text-xl font-medium text-[#fcfcfe]"
+            className={cn(primaryButtonClass, 'w-full')}
           >
             {isLoading ? <Spinner className="h-4 w-4" /> : 'Ingresar'}
           </Button>

@@ -8,12 +8,11 @@ import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { Check, LogOut } from 'lucide-react'
 import { mockCurrentUser } from '@/lib/mock-data'
+import { fieldClass, primaryButtonClass } from '@/lib/form-styles'
+import { cn } from '@/lib/utils'
 
 // Emails ya tomados por otras cuentas (mock hasta que exista backend)
 const takenEmails = ['sofi@email.com', 'tomi@email.com', 'lau@email.com']
-
-const fieldClass =
-  'h-auto rounded-[6px] border-[#cbd5e1] bg-white px-3 py-2 text-base leading-6 text-[#0f172a] placeholder:text-[#94a3b8] md:text-base'
 
 function initials(name: string) {
   return name
@@ -142,7 +141,7 @@ export default function ProfilePage() {
           <Button
             onClick={handleSave}
             disabled={isLoading}
-            className="h-10 rounded-[8px] px-4 text-xl font-medium text-[#fcfcfe]"
+            className={cn(primaryButtonClass, 'px-4')}
           >
             {isLoading ? <Spinner className="h-4 w-4" /> : 'Guardar cambios'}
           </Button>

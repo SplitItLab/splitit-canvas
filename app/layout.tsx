@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const inter = Inter({ 
@@ -13,7 +14,7 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono'
 })
 
-const title = 'SplitIt · prototipo'
+const title = 'SplitIt Design'
 const description =
   'Canvas de pantallas del prototipo. Datos de ejemplo, no es la app en produccion.'
 
@@ -48,6 +49,9 @@ export default function RootLayout({
     <html lang="es" className="bg-background">
       <body className={`${inter.variable} ${geistMono.variable} font-sans antialiased`}>
         {children}
+        {/* Avisos de toda la app. Sonner ya se pone full-width abajo por
+            debajo de 600px, asi que con bottom-right alcanza para los dos. */}
+        <Toaster position="bottom-right" theme="light" />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

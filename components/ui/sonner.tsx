@@ -10,11 +10,22 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps['theme']}
       className="toaster group"
+      // Mismo lenguaje que las cards y los botones: 8px de radio, borde gris
+      // del diseno y el verde del sistema para el icono de exito.
+      toastOptions={{
+        classNames: {
+          toast:
+            'rounded-[8px] border border-[#cfd6dc] bg-[#fefefe] text-[#001625] text-sm font-medium shadow-[0_8px_24px_rgba(0,22,37,0.10)]',
+          description: 'text-[#868992]',
+          success: '[&_[data-icon]]:text-primary',
+          error: '[&_[data-icon]]:text-destructive',
+        },
+      }}
       style={
         {
-          '--normal-bg': 'var(--popover)',
-          '--normal-text': 'var(--popover-foreground)',
-          '--normal-border': 'var(--border)',
+          '--normal-bg': '#fefefe',
+          '--normal-text': '#001625',
+          '--normal-border': '#cfd6dc',
         } as React.CSSProperties
       }
       {...props}

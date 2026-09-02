@@ -47,10 +47,9 @@ export default function CanvasPage() {
           PROTOTIPO
         </span>
         <div style={{ marginRight: 'auto' }}>
-          <div style={{ fontSize: 15, fontWeight: 600 }}>SplitIt · pantallas del prototipo</div>
+          <div style={{ fontSize: 15, fontWeight: 600 }}>SplitIt Design</div>
           <div style={{ fontSize: 12, color: '#8B93A3' }}>
-            {visibleScreens.length} pantallas · {allStories.length} historias · datos de ejemplo, no es la
-            app en producción
+            {visibleScreens.length} pantallas · {allStories.length} historias
           </div>
         </div>
 
